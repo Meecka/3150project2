@@ -4,6 +4,9 @@
 
 volatile int MSEC = 0; //represent milliseconds
 
+volatile int one = 0; //bools to enable delays
+volatile int one_point_five = 0;
+
 void timer1_init_ctc(){//initialize timer1 in ctc mode
 	TCCR1A= 0x00; //wgm10=wgm11=0 (ctc mode)
 	TCCR1B |= (1<<WGM12); //wgm12 = 1 (ctc mode)
@@ -34,32 +37,33 @@ ISR(TIMER1_COMPA_vect)//represent the interrupt service routine (this interrupt 
 {
 	TCNT1 = 0;
 	MSEC++;
-	if(MSEC > 1000)
-	{
-		MSEC = 0;
-		//
-	}
-	if(MSEC > 1500)
-	{
-		MSEC = 0;
-		//
-	}
+	while(MSEC < 1000 && one)
+	{}
+	while(MSEC < 1500 && one_point_five)
+	{}
 }
 
 int main(void)
 {
 	sei(); //enable the interrupt at the microcontroller level
 	timer1_init_ctc();
-	timer1_start();
 }
 
 Buzz_one_point_five(){
     for (int i = 0; i < 10; i++){
         for (int i = 0; i < 100; i++){
         PORTE &= ~(1 << 4);
-        //delay 1500ms
+		one_point_five = 1;
+        timer1_start();
+		timer1_stop();
+		MSEC = 0;
+		one_point_five = 0;
         PORTE |= (1 << 4);
-        //delay 1500ms
+        one_point_five = 1;
+        timer1_start();
+		timer1_stop();
+		MSEC = 0;
+		one_point_five = 0;
         }
     }
 }
@@ -68,9 +72,17 @@ Buzz_one(){
     for (int i = 0; i < 10; i++){
         for (int i = 0; i < 100; i++){
         PORTE &= ~(1 << 4);
-        //delay 1000ms
+        one = 1;
+        timer1_start();
+		timer1_stop();
+		MSEC = 0;
+		one = 0;
         PORTE |= (1 << 4);
-        //delay 1000ms
+        one = 1;
+        timer1_start();
+		timer1_stop();
+		MSEC = 0;
+		one = 0;
         }
     }
 }
