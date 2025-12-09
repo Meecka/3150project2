@@ -10,7 +10,7 @@ void timer0_stop();
 void timer0_reset();
 ISR(TIMER0_COMPA_vect);
 void timer2_init_ctc(int compare_value);
-void timer2_start();
+void timer2_start(int prescale);
 uint8_t timer2_expired();
 void timer2_stop();
 void timer2_reset();
@@ -104,6 +104,7 @@ void downCountLoop()
 			}
 		}
 	}
+	play_tone(1250, 750);
 	return;
 }
 
@@ -265,6 +266,10 @@ void play_tone(uint16_t frequency, uint16_t duration_ms)
 	for (uint32_t i = 0; i < total_toggles; i++)
 	{
 		PORTE |= (1 << 4);
+		if ((i % (frequency / 4) == 0) && (frequency == 1250))
+		{
+			PORTD ^= 0xFF; // flash LEDs
+		}
 		timer2_start(prescale);
 		while (!timer2_expired())
 			;
