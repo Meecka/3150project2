@@ -1,0 +1,1067 @@
+00000066  CLR R1		Clear Register 
+00000067  OUT 0x3F,R1		Out to I/O location 
+00000068  SER R28		Set Register 
+00000069  LDI R29,0x08		Load immediate 
+0000006A  OUT 0x3E,R29		Out to I/O location 
+0000006B  OUT 0x3D,R28		Out to I/O location 
+--- No source file -------------------------------------------------------------
+0000006C  LDI R17,0x01		Load immediate 
+0000006D  LDI R26,0x00		Load immediate 
+0000006E  LDI R27,0x01		Load immediate 
+0000006F  LDI R30,0xF0		Load immediate 
+00000070  LDI R31,0x08		Load immediate 
+00000071  RJMP PC+0x0003		Relative jump 
+00000072  LPM R0,Z+		Load program memory and postincrement 
+00000073  ST X+,R0		Store indirect and postincrement 
+00000074  CPI R26,0x06		Compare with immediate 
+00000075  CPC R27,R17		Compare with carry 
+00000076  BRNE PC-0x04		Branch if not equal 
+00000077  LDI R18,0x01		Load immediate 
+00000078  LDI R26,0x06		Load immediate 
+00000079  LDI R27,0x01		Load immediate 
+0000007A  RJMP PC+0x0002		Relative jump 
+0000007B  ST X+,R1		Store indirect and postincrement 
+0000007C  CPI R26,0x0A		Compare with immediate 
+0000007D  CPC R27,R18		Compare with carry 
+0000007E  BRNE PC-0x03		Branch if not equal 
+0000007F  CALL 0x000002A5		Call subroutine 
+00000081  JMP 0x00000476		Jump 
+00000083  JMP 0x00000000		Jump 
+--- C:\Users\fanta\Documents\Atmel Studio\7.0\GccApplication5\GccApplication5\Debug/.././main.c 
+{
+	TCCR0A |= (1 << WGM01);
+00000085  IN R24,0x24		In from I/O location 
+00000086  ORI R24,0x02		Logical OR with immediate 
+00000087  OUT 0x24,R24		Out to I/O location 
+--- C:\Users\fanta\Documents\Atmel Studio\7.0\GccApplication5\GccApplication5\Debug/.././main.c 
+	TCCR0B = 0x00; // CTC mode
+00000088  OUT 0x25,R1		Out to I/O location 
+	TCNT0 = 0;
+00000089  OUT 0x26,R1		Out to I/O location 
+	OCR0A = 249; // 1ms with prescalar 64
+0000008A  LDI R24,0xF9		Load immediate 
+0000008B  OUT 0x27,R24		Out to I/O location 
+0000008C  RET 		Subroutine return 
+	TIFR0 &= ~(1 << OCF0A);
+0000008D  IN R24,0x15		In from I/O location 
+0000008E  ANDI R24,0xFD		Logical AND with immediate 
+0000008F  OUT 0x15,R24		Out to I/O location 
+	TCNT0 = 0;
+00000090  OUT 0x26,R1		Out to I/O location 
+	TCCR0B |= ((1 << CS01) | (1 << CS00)); // prescalar 64
+00000091  IN R24,0x25		In from I/O location 
+00000092  ORI R24,0x03		Logical OR with immediate 
+00000093  OUT 0x25,R24		Out to I/O location 
+	TIMSK0 |= (1 << OCIE0A);			   // enable interrupt
+00000094  LDI R30,0x6E		Load immediate 
+00000095  LDI R31,0x00		Load immediate 
+00000096  LDD R24,Z+0		Load indirect with displacement 
+00000097  ORI R24,0x02		Logical OR with immediate 
+00000098  STD Z+0,R24		Store indirect with displacement 
+00000099  RET 		Subroutine return 
+	return (compare_count >= ms_delay); // if interrupt ms_delay times for longer delay
+0000009A  LDS R20,0x0108		Load direct from data space 
+0000009C  LDS R21,0x0109		Load direct from data space 
+0000009E  LDI R18,0x01		Load immediate 
+0000009F  CP R20,R24		Compare 
+000000A0  CPC R21,R25		Compare with carry 
+000000A1  BRGE PC+0x02		Branch if greater or equal, signed 
+000000A2  LDI R18,0x00		Load immediate 
+}
+000000A3  MOV R24,R18		Copy register 
+000000A4  RET 		Subroutine return 
+	TCCR0B = 0;
+000000A5  OUT 0x25,R1		Out to I/O location 
+	TIMSK0 &= ~(1 << OCIE0A);
+000000A6  LDI R30,0x6E		Load immediate 
+000000A7  LDI R31,0x00		Load immediate 
+000000A8  LDD R24,Z+0		Load indirect with displacement 
+000000A9  ANDI R24,0xFD		Logical AND with immediate 
+000000AA  STD Z+0,R24		Store indirect with displacement 
+000000AB  RET 		Subroutine return 
+	TCNT0 = 0;
+000000AC  OUT 0x26,R1		Out to I/O location 
+	TIFR0 |= (1 << OCF0A);
+000000AD  IN R24,0x15		In from I/O location 
+000000AE  ORI R24,0x02		Logical OR with immediate 
+000000AF  OUT 0x15,R24		Out to I/O location 
+	compare_count = 0;
+000000B0  STS 0x0109,R1		Store direct to data space 
+000000B2  STS 0x0108,R1		Store direct to data space 
+000000B4  RET 		Subroutine return 
+{
+000000B5  PUSH R1		Push register on stack 
+000000B6  PUSH R0		Push register on stack 
+000000B7  IN R0,0x3F		In from I/O location 
+000000B8  PUSH R0		Push register on stack 
+000000B9  CLR R1		Clear Register 
+000000BA  PUSH R24		Push register on stack 
+000000BB  PUSH R25		Push register on stack 
+	compare_count++; // timer interrupt
+000000BC  LDS R24,0x0108		Load direct from data space 
+000000BE  LDS R25,0x0109		Load direct from data space 
+000000C0  ADIW R24,0x01		Add immediate to word 
+000000C1  STS 0x0109,R25		Store direct to data space 
+000000C3  STS 0x0108,R24		Store direct to data space 
+}
+000000C5  POP R25		Pop register from stack 
+000000C6  POP R24		Pop register from stack 
+000000C7  POP R0		Pop register from stack 
+000000C8  OUT 0x3F,R0		Out to I/O location 
+000000C9  POP R0		Pop register from stack 
+000000CA  POP R1		Pop register from stack 
+000000CB  RETI 		Interrupt return 
+	TCCR2A |= (1 << WGM21);
+000000CC  LDI R30,0xB0		Load immediate 
+000000CD  LDI R31,0x00		Load immediate 
+000000CE  LDD R25,Z+0		Load indirect with displacement 
+000000CF  ORI R25,0x02		Logical OR with immediate 
+000000D0  STD Z+0,R25		Store indirect with displacement 
+	TCCR2B = 0x00; // CTC mode
+000000D1  STS 0x00B1,R1		Store direct to data space 
+	TCNT2 = 0;
+000000D3  STS 0x00B2,R1		Store direct to data space 
+	OCR2A = compare_value; // 1ms with prescalar 64
+000000D5  STS 0x00B3,R24		Store direct to data space 
+000000D7  RET 		Subroutine return 
+	TIFR2 &= ~(1 << OCF2A);
+000000D8  IN R18,0x17		In from I/O location 
+000000D9  ANDI R18,0xFD		Logical AND with immediate 
+000000DA  OUT 0x17,R18		Out to I/O location 
+	TCNT2 = 0;
+000000DB  STS 0x00B2,R1		Store direct to data space 
+	if (prescale == 1)
+000000DD  CPI R24,0x01		Compare with immediate 
+000000DE  CPC R25,R1		Compare with carry 
+000000DF  BRNE PC+0x07		Branch if not equal 
+		TCCR2B |= (1 << CS20); // prescalar 1
+000000E0  LDI R30,0xB1		Load immediate 
+000000E1  LDI R31,0x00		Load immediate 
+000000E2  LDD R24,Z+0		Load indirect with displacement 
+000000E3  ORI R24,0x01		Logical OR with immediate 
+000000E4  STD Z+0,R24		Store indirect with displacement 
+000000E5  RJMP PC+0x0025		Relative jump 
+	else if (prescale == 8)
+000000E6  CPI R24,0x08		Compare with immediate 
+000000E7  CPC R25,R1		Compare with carry 
+000000E8  BRNE PC+0x07		Branch if not equal 
+		TCCR2B |= (1 << CS21); // prescalar 8
+000000E9  LDI R30,0xB1		Load immediate 
+000000EA  LDI R31,0x00		Load immediate 
+000000EB  LDD R24,Z+0		Load indirect with displacement 
+000000EC  ORI R24,0x02		Logical OR with immediate 
+000000ED  STD Z+0,R24		Store indirect with displacement 
+000000EE  RJMP PC+0x001C		Relative jump 
+	else if (prescale == 64)
+000000EF  CPI R24,0x40		Compare with immediate 
+000000F0  CPC R25,R1		Compare with carry 
+000000F1  BRNE PC+0x07		Branch if not equal 
+		TCCR2B |= ((1 << CS21) | (1 << CS20)); // prescalar 64
+000000F2  LDI R30,0xB1		Load immediate 
+000000F3  LDI R31,0x00		Load immediate 
+000000F4  LDD R24,Z+0		Load indirect with displacement 
+000000F5  ORI R24,0x03		Logical OR with immediate 
+000000F6  STD Z+0,R24		Store indirect with displacement 
+000000F7  RJMP PC+0x0013		Relative jump 
+	else if (prescale == 256)
+000000F8  CP R24,R1		Compare 
+000000F9  LDI R18,0x01		Load immediate 
+000000FA  CPC R25,R18		Compare with carry 
+000000FB  BRNE PC+0x07		Branch if not equal 
+		TCCR2B |= (1 << CS22); // prescalar 256
+000000FC  LDI R30,0xB1		Load immediate 
+000000FD  LDI R31,0x00		Load immediate 
+000000FE  LDD R24,Z+0		Load indirect with displacement 
+000000FF  ORI R24,0x04		Logical OR with immediate 
+00000100  STD Z+0,R24		Store indirect with displacement 
+00000101  RJMP PC+0x0009		Relative jump 
+	else if (prescale == 1024)
+00000102  CP R24,R1		Compare 
+00000103  SBCI R25,0x04		Subtract immediate with carry 
+00000104  BRNE PC+0x06		Branch if not equal 
+		TCCR2B |= ((1 << CS22) | (1 << CS20)); // prescalar 1024
+00000105  LDI R30,0xB1		Load immediate 
+00000106  LDI R31,0x00		Load immediate 
+00000107  LDD R24,Z+0		Load indirect with displacement 
+00000108  ORI R24,0x05		Logical OR with immediate 
+00000109  STD Z+0,R24		Store indirect with displacement 
+	TIMSK2 |= (1 << OCIE2A); // enable interrupt
+0000010A  LDI R30,0x70		Load immediate 
+0000010B  LDI R31,0x00		Load immediate 
+0000010C  LDD R24,Z+0		Load indirect with displacement 
+0000010D  ORI R24,0x02		Logical OR with immediate 
+0000010E  STD Z+0,R24		Store indirect with displacement 
+0000010F  RET 		Subroutine return 
+	return (compare_count == 1); // if interrupt ms_delay times for longer delay
+00000110  LDS R18,0x0108		Load direct from data space 
+00000112  LDS R19,0x0109		Load direct from data space 
+00000114  LDI R24,0x01		Load immediate 
+00000115  CPI R18,0x01		Compare with immediate 
+00000116  CPC R19,R1		Compare with carry 
+00000117  BREQ PC+0x02		Branch if equal 
+00000118  LDI R24,0x00		Load immediate 
+}
+00000119  RET 		Subroutine return 
+	TCCR2B = 0;
+0000011A  STS 0x00B1,R1		Store direct to data space 
+	TIMSK2 &= ~(1 << OCIE2A);
+0000011C  LDI R30,0x70		Load immediate 
+0000011D  LDI R31,0x00		Load immediate 
+0000011E  LDD R24,Z+0		Load indirect with displacement 
+0000011F  ANDI R24,0xFD		Logical AND with immediate 
+00000120  STD Z+0,R24		Store indirect with displacement 
+00000121  RET 		Subroutine return 
+	TCNT2 = 0;
+00000122  STS 0x00B2,R1		Store direct to data space 
+	TIFR2 |= (1 << OCF2A);
+00000124  IN R24,0x17		In from I/O location 
+00000125  ORI R24,0x02		Logical OR with immediate 
+00000126  OUT 0x17,R24		Out to I/O location 
+	TCCR2B &= ~((1 << CS22) | (1 << CS21) | (1 << CS20)); // clear prescale bits
+00000127  LDI R30,0xB1		Load immediate 
+00000128  LDI R31,0x00		Load immediate 
+00000129  LDD R24,Z+0		Load indirect with displacement 
+0000012A  ANDI R24,0xF8		Logical AND with immediate 
+0000012B  STD Z+0,R24		Store indirect with displacement 
+	compare_count = 0;
+0000012C  STS 0x0109,R1		Store direct to data space 
+0000012E  STS 0x0108,R1		Store direct to data space 
+00000130  RET 		Subroutine return 
+{
+00000131  PUSH R1		Push register on stack 
+00000132  PUSH R0		Push register on stack 
+00000133  IN R0,0x3F		In from I/O location 
+00000134  PUSH R0		Push register on stack 
+00000135  CLR R1		Clear Register 
+00000136  PUSH R18		Push register on stack 
+00000137  PUSH R19		Push register on stack 
+00000138  PUSH R20		Push register on stack 
+00000139  PUSH R21		Push register on stack 
+0000013A  PUSH R22		Push register on stack 
+0000013B  PUSH R23		Push register on stack 
+0000013C  PUSH R24		Push register on stack 
+0000013D  PUSH R25		Push register on stack 
+0000013E  PUSH R26		Push register on stack 
+0000013F  PUSH R27		Push register on stack 
+00000140  PUSH R30		Push register on stack 
+00000141  PUSH R31		Push register on stack 
+	compare_count = 1;
+00000142  LDI R24,0x01		Load immediate 
+00000143  LDI R25,0x00		Load immediate 
+00000144  STS 0x0109,R25		Store direct to data space 
+00000146  STS 0x0108,R24		Store direct to data space 
+--- C:\Users\fanta\Documents\Atmel Studio\7.0\GccApplication5\GccApplication5\Debug/.././main.c 
+	timer2_stop();
+00000148  CALL 0x0000011A		Call subroutine 
+}
+0000014A  POP R31		Pop register from stack 
+0000014B  POP R30		Pop register from stack 
+0000014C  POP R27		Pop register from stack 
+0000014D  POP R26		Pop register from stack 
+0000014E  POP R25		Pop register from stack 
+0000014F  POP R24		Pop register from stack 
+00000150  POP R23		Pop register from stack 
+00000151  POP R22		Pop register from stack 
+00000152  POP R21		Pop register from stack 
+00000153  POP R20		Pop register from stack 
+00000154  POP R19		Pop register from stack 
+00000155  POP R18		Pop register from stack 
+00000156  POP R0		Pop register from stack 
+00000157  OUT 0x3F,R0		Out to I/O location 
+00000158  POP R0		Pop register from stack 
+00000159  POP R1		Pop register from stack 
+0000015A  RETI 		Interrupt return 
+{ // wait until user responds
+0000015B  PUSH R28		Push register on stack 
+0000015C  PUSH R29		Push register on stack 
+0000015D  MOVW R28,R24		Copy register pair 
+	timer0_stop();
+0000015E  CALL 0x000000A5		Call subroutine 
+	timer0_reset();
+00000160  CALL 0x000000AC		Call subroutine 
+	timer0_start();
+00000162  CALL 0x0000008D		Call subroutine 
+	while (!timer0_expired(ms))
+00000164  MOVW R24,R28		Copy register pair 
+00000165  CALL 0x0000009A		Call subroutine 
+00000167  TST R24		Test for Zero or Minus 
+00000168  BREQ PC-0x04		Branch if equal 
+	timer0_stop();
+00000169  CALL 0x000000A5		Call subroutine 
+}
+0000016B  POP R29		Pop register from stack 
+0000016C  POP R28		Pop register from stack 
+0000016D  RET 		Subroutine return 
+{ // play a given frequency for a given amount of time
+0000016E  PUSH R4		Push register on stack 
+0000016F  PUSH R5		Push register on stack 
+00000170  PUSH R6		Push register on stack 
+00000171  PUSH R7		Push register on stack 
+00000172  PUSH R8		Push register on stack 
+00000173  PUSH R9		Push register on stack 
+00000174  PUSH R10		Push register on stack 
+00000175  PUSH R11		Push register on stack 
+00000176  PUSH R12		Push register on stack 
+00000177  PUSH R13		Push register on stack 
+00000178  PUSH R14		Push register on stack 
+00000179  PUSH R15		Push register on stack 
+0000017A  PUSH R28		Push register on stack 
+0000017B  PUSH R29		Push register on stack 
+	if (frequency == 0 || duration_ms == 0)
+0000017C  SBIW R24,0x00		Subtract immediate from word 
+0000017D  BRNE PC+0x02		Branch if not equal 
+0000017E  RJMP PC+0x00A4		Relative jump 
+--- No source file -------------------------------------------------------------
+0000017F  CP R22,R1		Compare 
+00000180  CPC R23,R1		Compare with carry 
+00000181  BRNE PC+0x02		Branch if not equal 
+00000182  RJMP PC+0x00A0		Relative jump 
+00000183  MOVW R18,R22		Copy register pair 
+00000184  MOVW R20,R24		Copy register pair 
+00000185  LDI R26,0xE8		Load immediate 
+00000186  LDI R27,0x03		Load immediate 
+00000187  CALL 0x00000467		Call subroutine 
+00000189  MOVW R8,R22		Copy register pair 
+0000018A  MOVW R10,R24		Copy register pair 
+0000018B  MOVW R18,R20		Copy register pair 
+0000018C  LDI R20,0x00		Load immediate 
+0000018D  LDI R21,0x00		Load immediate 
+0000018E  LDI R22,0x20		Load immediate 
+0000018F  LDI R23,0xA1		Load immediate 
+00000190  LDI R24,0x07		Load immediate 
+00000191  LDI R25,0x00		Load immediate 
+00000192  CALL 0x00000448		Call subroutine 
+00000194  MOVW R4,R18		Copy register pair 
+00000195  MOVW R6,R20		Copy register pair 
+00000196  MOVW R22,R18		Copy register pair 
+00000197  LDI R24,0x00		Load immediate 
+00000198  LDI R25,0x00		Load immediate 
+00000199  CALL 0x0000032B		Call subroutine 
+0000019B  LDI R18,0x00		Load immediate 
+0000019C  LDI R19,0x00		Load immediate 
+0000019D  LDI R20,0x80		Load immediate 
+0000019E  LDI R21,0x41		Load immediate 
+0000019F  CALL 0x00000391		Call subroutine 
+000001A1  CALL 0x000002F5		Call subroutine 
+000001A3  CPI R22,0xFF		Compare with immediate 
+000001A4  CPC R23,R1		Compare with carry 
+000001A5  BREQ PC+0x02		Branch if equal 
+000001A6  BRGE PC+0x08		Branch if greater or equal, signed 
+000001A7  CLR R14		Clear Register 
+000001A8  CLR R15		Clear Register 
+000001A9  SUB R14,R22		Subtract without carry 
+000001AA  SBC R15,R23		Subtract with carry 
+		prescale = 1; // no prescaling
+000001AB  LDI R28,0x01		Load immediate 
+000001AC  LDI R29,0x00		Load immediate 
+000001AD  RJMP PC+0x003D		Relative jump 
+	else if (machineCycles / 8 <= 255)
+000001AE  CP R22,R1		Compare 
+000001AF  LDI R20,0x08		Load immediate 
+000001B0  CPC R23,R20		Compare with carry 
+000001B1  BRGE PC+0x13		Branch if greater or equal, signed 
+		timer_preload_val = 0 - (machineCycles / 8);
+000001B2  MOVW R14,R22		Copy register pair 
+000001B3  TST R23		Test for Zero or Minus 
+000001B4  BRGE PC+0x04		Branch if greater or equal, signed 
+000001B5  LDI R18,0x07		Load immediate 
+000001B6  ADD R14,R18		Add without carry 
+000001B7  ADC R15,R1		Add with carry 
+000001B8  ASR R15		Arithmetic shift right 
+000001B9  ROR R14		Rotate right through carry 
+000001BA  ASR R15		Arithmetic shift right 
+000001BB  ROR R14		Rotate right through carry 
+000001BC  ASR R15		Arithmetic shift right 
+000001BD  ROR R14		Rotate right through carry 
+000001BE  NEG R15		Two's complement 
+000001BF  NEG R14		Two's complement 
+000001C0  SBC R15,R1		Subtract with carry 
+		prescale = 8;
+000001C1  LDI R28,0x08		Load immediate 
+000001C2  LDI R29,0x00		Load immediate 
+000001C3  RJMP PC+0x0027		Relative jump 
+	else if (machineCycles / 64 <= 255)
+000001C4  CP R22,R1		Compare 
+000001C5  LDI R20,0x40		Load immediate 
+000001C6  CPC R23,R20		Compare with carry 
+000001C7  BRGE PC+0x15		Branch if greater or equal, signed 
+		timer_preload_val = 0 - (machineCycles / 64);
+000001C8  MOVW R18,R22		Copy register pair 
+000001C9  TST R23		Test for Zero or Minus 
+000001CA  BRGE PC+0x03		Branch if greater or equal, signed 
+000001CB  SUBI R18,0xC1		Subtract immediate 
+000001CC  SBCI R19,0xFF		Subtract immediate with carry 
+000001CD  MOV R0,R18		Copy register 
+000001CE  MOV R18,R19		Copy register 
+000001CF  LSL R0		Logical Shift Left 
+000001D0  ROL R18		Rotate Left Through Carry 
+000001D1  SBC R19,R19		Subtract with carry 
+000001D2  LSL R0		Logical Shift Left 
+000001D3  ROL R18		Rotate Left Through Carry 
+000001D4  ROL R19		Rotate Left Through Carry 
+000001D5  CLR R14		Clear Register 
+000001D6  CLR R15		Clear Register 
+000001D7  SUB R14,R18		Subtract without carry 
+000001D8  SBC R15,R19		Subtract with carry 
+		prescale = 64;
+000001D9  LDI R28,0x40		Load immediate 
+000001DA  LDI R29,0x00		Load immediate 
+000001DB  RJMP PC+0x000F		Relative jump 
+		timer_preload_val = 0 - (machineCycles / 256);
+000001DC  MOVW R18,R22		Copy register pair 
+000001DD  TST R23		Test for Zero or Minus 
+000001DE  BRGE PC+0x03		Branch if greater or equal, signed 
+000001DF  SUBI R18,0x01		Subtract immediate 
+000001E0  SBCI R19,0xFF		Subtract immediate with carry 
+000001E1  MOV R14,R19		Copy register 
+000001E2  MOV R15,R19		Copy register 
+000001E3  LSL R15		Logical Shift Left 
+000001E4  SBC R15,R15		Subtract with carry 
+000001E5  NEG R15		Two's complement 
+000001E6  NEG R14		Two's complement 
+000001E7  SBC R15,R1		Subtract with carry 
+		prescale = 256;
+000001E8  LDI R28,0x00		Load immediate 
+000001E9  LDI R29,0x01		Load immediate 
+	timer2_stop();
+000001EA  CALL 0x0000011A		Call subroutine 
+	timer2_reset();
+000001EC  CALL 0x00000122		Call subroutine 
+	timer2_init_ctc(timer_preload_val);
+000001EE  MOVW R24,R14		Copy register pair 
+000001EF  CALL 0x000000CC		Call subroutine 
+	uint32_t total_toggles = duration_us / (2 * half_period_us); // each cycle = 2 toggles
+000001F1  LSL R4		Logical Shift Left 
+000001F2  ROL R5		Rotate Left Through Carry 
+000001F3  MOVW R18,R4		Copy register pair 
+000001F4  LDI R20,0x00		Load immediate 
+000001F5  LDI R21,0x00		Load immediate 
+000001F6  MOVW R24,R10		Copy register pair 
+000001F7  MOVW R22,R8		Copy register pair 
+000001F8  CALL 0x00000426		Call subroutine 
+000001FA  MOVW R8,R18		Copy register pair 
+000001FB  MOVW R10,R20		Copy register pair 
+	for (uint32_t i = 0; i < total_toggles; i++)
+000001FC  MOV R12,R1		Copy register 
+000001FD  MOV R13,R1		Copy register 
+000001FE  MOVW R14,R12		Copy register pair 
+000001FF  RJMP PC+0x001E		Relative jump 
+		PORTE |= (1 << 4);
+00000200  IN R24,0x0E		In from I/O location 
+00000201  ORI R24,0x10		Logical OR with immediate 
+00000202  OUT 0x0E,R24		Out to I/O location 
+--- C:\Users\fanta\Documents\Atmel Studio\7.0\GccApplication5\GccApplication5\Debug/.././main.c 
+		timer2_start(prescale);
+00000203  MOVW R24,R28		Copy register pair 
+00000204  CALL 0x000000D8		Call subroutine 
+		while (!timer2_expired())
+00000206  CALL 0x00000110		Call subroutine 
+00000208  TST R24		Test for Zero or Minus 
+00000209  BREQ PC-0x03		Branch if equal 
+		timer2_reset();
+0000020A  CALL 0x00000122		Call subroutine 
+		PORTE &= ~(1 << 4);
+0000020C  IN R24,0x0E		In from I/O location 
+0000020D  ANDI R24,0xEF		Logical AND with immediate 
+0000020E  OUT 0x0E,R24		Out to I/O location 
+		timer2_start(prescale);
+0000020F  MOVW R24,R28		Copy register pair 
+00000210  CALL 0x000000D8		Call subroutine 
+		while (!timer2_expired())
+00000212  CALL 0x00000110		Call subroutine 
+00000214  TST R24		Test for Zero or Minus 
+00000215  BREQ PC-0x03		Branch if equal 
+		timer2_reset();
+00000216  CALL 0x00000122		Call subroutine 
+	for (uint32_t i = 0; i < total_toggles; i++)
+00000218  SER R24		Set Register 
+00000219  SUB R12,R24		Subtract without carry 
+0000021A  SBC R13,R24		Subtract with carry 
+0000021B  SBC R14,R24		Subtract with carry 
+0000021C  SBC R15,R24		Subtract with carry 
+--- No source file -------------------------------------------------------------
+0000021D  CP R12,R8		Compare 
+0000021E  CPC R13,R9		Compare with carry 
+0000021F  CPC R14,R10		Compare with carry 
+00000220  CPC R15,R11		Compare with carry 
+00000221  BRCS PC-0x21		Branch if carry set 
+00000222  POP R29		Pop register from stack 
+00000223  POP R28		Pop register from stack 
+00000224  POP R15		Pop register from stack 
+00000225  POP R14		Pop register from stack 
+00000226  POP R13		Pop register from stack 
+00000227  POP R12		Pop register from stack 
+00000228  POP R11		Pop register from stack 
+00000229  POP R10		Pop register from stack 
+0000022A  POP R9		Pop register from stack 
+0000022B  POP R8		Pop register from stack 
+0000022C  POP R7		Pop register from stack 
+0000022D  POP R6		Pop register from stack 
+0000022E  POP R5		Pop register from stack 
+0000022F  POP R4		Pop register from stack 
+00000230  RET 		Subroutine return 
+00000231  COM R24		One's complement 
+00000232  COM R25		One's complement 
+00000233  MOVW R20,R24		Copy register pair 
+00000234  ANDI R20,0xF0		Logical AND with immediate 
+00000235  CLR R21		Clear Register 
+00000236  ASR R21		Arithmetic shift right 
+00000237  ROR R20		Rotate right through carry 
+00000238  ASR R21		Arithmetic shift right 
+00000239  ROR R20		Rotate right through carry 
+0000023A  ASR R21		Arithmetic shift right 
+0000023B  ROR R20		Rotate right through carry 
+0000023C  ASR R21		Arithmetic shift right 
+0000023D  ROR R20		Rotate right through carry 
+0000023E  SWAP R24		Swap nibbles 
+0000023F  SWAP R25		Swap nibbles 
+00000240  ANDI R25,0xF0		Logical AND with immediate 
+00000241  EOR R25,R24		Exclusive OR 
+00000242  ANDI R24,0xF0		Logical AND with immediate 
+00000243  EOR R25,R24		Exclusive OR 
+00000244  CLR R25		Clear Register 
+00000245  OR R20,R24		Logical OR 
+00000246  OR R21,R25		Logical OR 
+	temp = (temp & 0b11001100) >> 2 | (temp & 0b00110011) << 2; // Swap every other 2 bits
+00000247  MOVW R18,R20		Copy register pair 
+00000248  ANDI R18,0xCC		Logical AND with immediate 
+00000249  CLR R19		Clear Register 
+0000024A  ASR R19		Arithmetic shift right 
+0000024B  ROR R18		Rotate right through carry 
+0000024C  ASR R19		Arithmetic shift right 
+0000024D  ROR R18		Rotate right through carry 
+0000024E  ANDI R20,0x33		Logical AND with immediate 
+0000024F  CLR R21		Clear Register 
+00000250  LSL R20		Logical Shift Left 
+00000251  ROL R21		Rotate Left Through Carry 
+00000252  LSL R20		Logical Shift Left 
+00000253  ROL R21		Rotate Left Through Carry 
+00000254  OR R18,R20		Logical OR 
+00000255  OR R19,R21		Logical OR 
+	temp = (temp & 0b10101010) >> 1 | (temp & 0b01010101) << 1; // Swap every other bit
+00000256  MOVW R24,R18		Copy register pair 
+00000257  ANDI R24,0xAA		Logical AND with immediate 
+00000258  CLR R25		Clear Register 
+00000259  ASR R25		Arithmetic shift right 
+0000025A  ROR R24		Rotate right through carry 
+0000025B  ANDI R18,0x55		Logical AND with immediate 
+0000025C  CLR R19		Clear Register 
+0000025D  LSL R18		Logical Shift Left 
+0000025E  ROL R19		Rotate Left Through Carry 
+--- C:\Users\fanta\Documents\Atmel Studio\7.0\GccApplication5\GccApplication5\Debug/.././main.c 
+}
+0000025F  OR R24,R18		Logical OR 
+00000260  OR R25,R19		Logical OR 
+00000261  RET 		Subroutine return 
+	if (CountingVar == CountingMax)
+00000262  LDS R18,0x0106		Load direct from data space 
+00000264  LDS R19,0x0107		Load direct from data space 
+00000266  LDS R24,0x0104		Load direct from data space 
+00000268  LDS R25,0x0105		Load direct from data space 
+0000026A  CP R18,R24		Compare 
+0000026B  CPC R19,R25		Compare with carry 
+0000026C  BRNE PC+0x08		Branch if not equal 
+		CountersEqual = 1;
+0000026D  LDI R24,0x01		Load immediate 
+0000026E  LDI R25,0x00		Load immediate 
+0000026F  STS 0x0101,R25		Store direct to data space 
+00000271  STS 0x0100,R24		Store direct to data space 
+		return;
+00000273  RET 		Subroutine return 
+		CountingVar = 0;
+00000274  STS 0x0107,R1		Store direct to data space 
+00000276  STS 0x0106,R1		Store direct to data space 
+		play_tone(1500, 1500);
+00000278  LDI R22,0xDC		Load immediate 
+00000279  LDI R23,0x05		Load immediate 
+0000027A  LDI R24,0xDC		Load immediate 
+0000027B  LDI R25,0x05		Load immediate 
+0000027C  CALL 0x0000016E		Call subroutine 
+0000027E  RET 		Subroutine return 
+	CountingVar = CountingMax;
+0000027F  LDS R24,0x0104		Load direct from data space 
+00000281  LDS R25,0x0105		Load direct from data space 
+00000283  STS 0x0107,R25		Store direct to data space 
+00000285  STS 0x0106,R24		Store direct to data space 
+	play_tone(1000, 1000);
+00000287  LDI R22,0xE8		Load immediate 
+00000288  LDI R23,0x03		Load immediate 
+00000289  LDI R24,0xE8		Load immediate 
+0000028A  LDI R25,0x03		Load immediate 
+0000028B  CALL 0x0000016E		Call subroutine 
+0000028D  RET 		Subroutine return 
+	if (CountingVar >= CountingMax)
+0000028E  LDS R18,0x0106		Load direct from data space 
+00000290  LDS R19,0x0107		Load direct from data space 
+00000292  LDS R24,0x0104		Load direct from data space 
+00000294  LDS R25,0x0105		Load direct from data space 
+00000296  CP R18,R24		Compare 
+00000297  CPC R19,R25		Compare with carry 
+00000298  BRLT PC+0x04		Branch if less than, signed 
+		HHigh();
+00000299  CALL 0x00000262		Call subroutine 
+0000029B  RET 		Subroutine return 
+	else if (CountingVar < 0x00)
+0000029C  LDS R24,0x0106		Load direct from data space 
+0000029E  LDS R25,0x0107		Load direct from data space 
+000002A0  TST R25		Test for Zero or Minus 
+000002A1  BRGE PC+0x03		Branch if greater or equal, signed 
+		LLow();
+000002A2  CALL 0x0000027F		Call subroutine 
+000002A4  RET 		Subroutine return 
+	DDRA = 0x00;
+000002A5  OUT 0x01,R1		Out to I/O location 
+	PORTA = 0xFF;
+000002A6  SER R24		Set Register 
+000002A7  OUT 0x02,R24		Out to I/O location 
+	DDRD = 0xFF;
+000002A8  OUT 0x0A,R24		Out to I/O location 
+	DDRE = 0x10; // make all PE output
+000002A9  LDI R24,0x10		Load immediate 
+000002AA  OUT 0x0D,R24		Out to I/O location 
+	PORTD = 0b01111000;
+000002AB  LDI R24,0x78		Load immediate 
+000002AC  OUT 0x0B,R24		Out to I/O location 
+	sei();
+000002AD  SEI 		Global Interrupt Enable 
+	timer0_init_ctc();
+000002AE  CALL 0x00000085		Call subroutine 
+		CountersEqual = 0;
+000002B0  STS 0x0101,R1		Store direct to data space 
+000002B2  STS 0x0100,R1		Store direct to data space 
+--- C:\Users\fanta\Documents\Atmel Studio\7.0\GccApplication5\GccApplication5\Debug/.././main.c 
+		if (~PINA & (1 << 5))
+000002B4  SBIC 0x00,5		Skip if bit in I/O register cleared 
+000002B5  RJMP PC+0x000A		Relative jump 
+			CountingVar++;
+000002B6  LDS R24,0x0106		Load direct from data space 
+000002B8  LDS R25,0x0107		Load direct from data space 
+000002BA  ADIW R24,0x01		Add immediate to word 
+000002BB  STS 0x0107,R25		Store direct to data space 
+000002BD  STS 0x0106,R24		Store direct to data space 
+		if (~PINA & (1 << 7))
+000002BF  SBIC 0x00,7		Skip if bit in I/O register cleared 
+000002C0  RJMP PC+0x000A		Relative jump 
+			CountingVar--;
+000002C1  LDS R24,0x0106		Load direct from data space 
+000002C3  LDS R25,0x0107		Load direct from data space 
+000002C5  SBIW R24,0x01		Subtract immediate from word 
+000002C6  STS 0x0107,R25		Store direct to data space 
+000002C8  STS 0x0106,R24		Store direct to data space 
+		if (~PINA & (1 << 0))
+000002CA  SBIC 0x00,0		Skip if bit in I/O register cleared 
+000002CB  RJMP PC+0x000A		Relative jump 
+			CountingMax++;
+000002CC  LDS R24,0x0104		Load direct from data space 
+000002CE  LDS R25,0x0105		Load direct from data space 
+000002D0  ADIW R24,0x01		Add immediate to word 
+000002D1  STS 0x0105,R25		Store direct to data space 
+000002D3  STS 0x0104,R24		Store direct to data space 
+		if (~PINA & (1 << 2))
+000002D5  SBIC 0x00,2		Skip if bit in I/O register cleared 
+--- C:\Users\fanta\Documents\Atmel Studio\7.0\GccApplication5\GccApplication5\Debug/.././main.c 
+000002D6  RJMP PC+0x000F		Relative jump 
+			CountingMax -= CountingChange;
+000002D7  LDS R18,0x0102		Load direct from data space 
+000002D9  LDS R19,0x0103		Load direct from data space 
+000002DB  LDS R24,0x0104		Load direct from data space 
+000002DD  LDS R25,0x0105		Load direct from data space 
+000002DF  SUB R24,R18		Subtract without carry 
+000002E0  SBC R25,R19		Subtract with carry 
+000002E1  STS 0x0105,R25		Store direct to data space 
+000002E3  STS 0x0104,R24		Store direct to data space 
+		PORTD = flip(CountingVar);
+000002E5  LDS R24,0x0106		Load direct from data space 
+000002E7  LDS R25,0x0107		Load direct from data space 
+000002E9  CALL 0x00000231		Call subroutine 
+000002EB  OUT 0x0B,R24		Out to I/O location 
+		PORTA = 0xFF;
+000002EC  SER R24		Set Register 
+000002ED  OUT 0x02,R24		Out to I/O location 
+		delay(296);
+000002EE  LDI R24,0x28		Load immediate 
+000002EF  LDI R25,0x01		Load immediate 
+000002F0  CALL 0x0000015B		Call subroutine 
+		CheckHighLow();
+000002F2  CALL 0x0000028E		Call subroutine 
+	}
+000002F4  RJMP PC-0x0044		Relative jump 
+--- No source file -------------------------------------------------------------
+000002F5  CALL 0x000002FC		Call subroutine 
+000002F7  SET 		Set T in SREG 
+000002F8  CPSE R27,R1		Compare, skip if equal 
+000002F9  JMP 0x0000038B		Jump 
+000002FB  RET 		Subroutine return 
+000002FC  CALL 0x00000370		Call subroutine 
+000002FE  BRCS PC+0x12		Branch if carry set 
+000002FF  SUBI R25,0x7F		Subtract immediate 
+00000300  BRCS PC+0x14		Branch if carry set 
+00000301  MOV R27,R25		Copy register 
+00000302  CLR R25		Clear Register 
+00000303  SUBI R27,0x17		Subtract immediate 
+00000304  BRCS PC+0x17		Branch if carry set 
+00000305  BREQ PC+0x1D		Branch if equal 
+00000306  LSL R22		Logical Shift Left 
+00000307  ROL R23		Rotate Left Through Carry 
+00000308  ROL R24		Rotate Left Through Carry 
+00000309  ROL R25		Rotate Left Through Carry 
+0000030A  BRMI PC+0x04		Branch if minus 
+0000030B  DEC R27		Decrement 
+0000030C  BRNE PC-0x06		Branch if not equal 
+0000030D  RJMP PC+0x0015		Relative jump 
+0000030E  CPI R27,0x01		Compare with immediate 
+--- No source file -------------------------------------------------------------
+0000030F  BREQ PC+0x13		Branch if equal 
+00000310  CALL 0x0000038A		Call subroutine 
+00000312  LDI R27,0x01		Load immediate 
+00000313  RET 		Subroutine return 
+00000314  JMP 0x0000038A		Jump 
+00000316  MOV R22,R23		Copy register 
+00000317  MOV R23,R24		Copy register 
+00000318  CLR R24		Clear Register 
+00000319  SUBI R27,0xF8		Subtract immediate 
+0000031A  BREQ PC+0x08		Branch if equal 
+0000031B  CPI R27,0xF9		Compare with immediate 
+0000031C  BRLT PC-0x06		Branch if less than, signed 
+0000031D  LSR R24		Logical shift right 
+0000031E  ROR R23		Rotate right through carry 
+0000031F  ROR R22		Rotate right through carry 
+00000320  INC R27		Increment 
+00000321  BRNE PC-0x04		Branch if not equal 
+00000322  BRTC PC+0x08		Branch if T flag cleared 
+00000323  COM R25		One's complement 
+00000324  COM R24		One's complement 
+00000325  COM R23		One's complement 
+00000326  NEG R22		Two's complement 
+00000327  SBCI R23,0xFF		Subtract immediate with carry 
+00000328  SBCI R24,0xFF		Subtract immediate with carry 
+00000329  SBCI R25,0xFF		Subtract immediate with carry 
+0000032A  RET 		Subroutine return 
+0000032B  CLT 		Clear T in SREG 
+0000032C  RJMP PC+0x000A		Relative jump 
+0000032D  BST R25,7		Bit store from register to T 
+0000032E  BRTC PC+0x08		Branch if T flag cleared 
+0000032F  COM R25		One's complement 
+00000330  COM R24		One's complement 
+00000331  COM R23		One's complement 
+00000332  NEG R22		Two's complement 
+00000333  SBCI R23,0xFF		Subtract immediate with carry 
+00000334  SBCI R24,0xFF		Subtract immediate with carry 
+00000335  SBCI R25,0xFF		Subtract immediate with carry 
+00000336  TST R25		Test for Zero or Minus 
+00000337  BREQ PC+0x16		Branch if equal 
+00000338  MOV R31,R25		Copy register 
+00000339  LDI R25,0x96		Load immediate 
+0000033A  CLR R27		Clear Register 
+0000033B  INC R25		Increment 
+--- No source file -------------------------------------------------------------
+0000033C  LSR R31		Logical shift right 
+0000033D  ROR R24		Rotate right through carry 
+0000033E  ROR R23		Rotate right through carry 
+0000033F  ROR R22		Rotate right through carry 
+00000340  ROR R27		Rotate right through carry 
+00000341  CPSE R31,R1		Compare, skip if equal 
+00000342  RJMP PC-0x0007		Relative jump 
+00000343  BRPL PC+0x20		Branch if plus 
+00000344  LSL R27		Logical Shift Left 
+00000345  BRNE PC+0x03		Branch if not equal 
+00000346  SBRS R22,0		Skip if bit in register set 
+00000347  RJMP PC+0x001C		Relative jump 
+00000348  SUBI R22,0xFF		Subtract immediate 
+00000349  SBCI R23,0xFF		Subtract immediate with carry 
+0000034A  SBCI R24,0xFF		Subtract immediate with carry 
+0000034B  SBCI R25,0xFF		Subtract immediate with carry 
+0000034C  RJMP PC+0x0017		Relative jump 
+0000034D  TST R24		Test for Zero or Minus 
+0000034E  BREQ PC+0x03		Branch if equal 
+0000034F  LDI R25,0x96		Load immediate 
+00000350  RJMP PC+0x0012		Relative jump 
+00000351  TST R23		Test for Zero or Minus 
+00000352  BREQ PC+0x05		Branch if equal 
+00000353  LDI R25,0x8E		Load immediate 
+00000354  MOV R24,R23		Copy register 
+00000355  MOV R23,R22		Copy register 
+00000356  RJMP PC+0x0006		Relative jump 
+00000357  TST R22		Test for Zero or Minus 
+00000358  BREQ PC+0x0F		Branch if equal 
+00000359  LDI R25,0x86		Load immediate 
+0000035A  MOV R24,R22		Copy register 
+0000035B  LDI R23,0x00		Load immediate 
+0000035C  LDI R22,0x00		Load immediate 
+0000035D  BRMI PC+0x06		Branch if minus 
+0000035E  DEC R25		Decrement 
+0000035F  LSL R22		Logical Shift Left 
+00000360  ROL R23		Rotate Left Through Carry 
+00000361  ROL R24		Rotate Left Through Carry 
+00000362  BRPL PC-0x04		Branch if plus 
+00000363  LSL R24		Logical Shift Left 
+00000364  LSR R25		Logical shift right 
+00000365  ROR R24		Rotate right through carry 
+00000366  BLD R25,7		Bit load from T to register 
+--- No source file -------------------------------------------------------------
+00000367  RET 		Subroutine return 
+00000368  SBRC R21,7		Skip if bit in register cleared 
+00000369  SUBI R25,0x80		Subtract immediate 
+0000036A  LSL R20		Logical Shift Left 
+0000036B  ROL R21		Rotate Left Through Carry 
+0000036C  BREQ PC+0x0C		Branch if equal 
+0000036D  CPI R21,0xFF		Compare with immediate 
+0000036E  BREQ PC+0x0F		Branch if equal 
+0000036F  ROR R20		Rotate right through carry 
+00000370  LSL R24		Logical Shift Left 
+00000371  BST R25,7		Bit store from register to T 
+00000372  ROL R25		Rotate Left Through Carry 
+00000373  BREQ PC+0x0D		Branch if equal 
+00000374  CPI R25,0xFF		Compare with immediate 
+00000375  BREQ PC+0x10		Branch if equal 
+00000376  ROR R24		Rotate right through carry 
+00000377  RET 		Subroutine return 
+00000378  CP R1,R18		Compare 
+00000379  CPC R1,R19		Compare with carry 
+0000037A  CPC R1,R20		Compare with carry 
+0000037B  ROL R21		Rotate Left Through Carry 
+0000037C  RJMP PC-0x000D		Relative jump 
+0000037D  LSR R20		Logical shift right 
+0000037E  RCALL PC-0x000E		Relative call subroutine 
+0000037F  RJMP PC+0x0009		Relative jump 
+00000380  CP R1,R22		Compare 
+00000381  CPC R1,R23		Compare with carry 
+00000382  CPC R1,R24		Compare with carry 
+00000383  ROL R25		Rotate Left Through Carry 
+00000384  RJMP PC-0x000E		Relative jump 
+00000385  LSR R24		Logical shift right 
+00000386  CPC R23,R1		Compare with carry 
+00000387  CPC R22,R1		Compare with carry 
+00000388  SEC 		Set Carry 
+00000389  RET 		Subroutine return 
+0000038A  CLT 		Clear T in SREG 
+0000038B  CLR R27		Clear Register 
+0000038C  CLR R22		Clear Register 
+0000038D  CLR R23		Clear Register 
+0000038E  MOVW R24,R22		Copy register pair 
+0000038F  BLD R25,7		Bit load from T to register 
+00000390  RET 		Subroutine return 
+00000391  CALL 0x000003A4		Call subroutine 
+--- No source file -------------------------------------------------------------
+00000393  JMP 0x00000415		Jump 
+00000395  CALL 0x00000407		Call subroutine 
+00000397  BRCS PC+0x08		Branch if carry set 
+00000398  CALL 0x0000040E		Call subroutine 
+0000039A  BRCS PC+0x05		Branch if carry set 
+0000039B  AND R25,R21		Logical AND 
+0000039C  BREQ PC+0x03		Branch if equal 
+0000039D  JMP 0x000003FE		Jump 
+0000039F  JMP 0x00000404		Jump 
+000003A1  CLR R1		Clear Register 
+000003A2  JMP 0x0000038B		Jump 
+000003A4  CALL 0x00000368		Call subroutine 
+000003A6  BRCS PC-0x11		Branch if carry set 
+000003A7  MUL R25,R21		Multiply unsigned 
+000003A8  BREQ PC-0x07		Branch if equal 
+000003A9  ADD R25,R21		Add without carry 
+000003AA  LDI R21,0x00		Load immediate 
+000003AB  ROL R21		Rotate Left Through Carry 
+000003AC  MUL R22,R18		Multiply unsigned 
+000003AD  MOVW R30,R0		Copy register pair 
+000003AE  MUL R23,R18		Multiply unsigned 
+000003AF  CLR R27		Clear Register 
+000003B0  ADD R31,R0		Add without carry 
+000003B1  ADC R27,R1		Add with carry 
+000003B2  MUL R22,R19		Multiply unsigned 
+000003B3  CLR R26		Clear Register 
+000003B4  ADD R31,R0		Add without carry 
+000003B5  ADC R27,R1		Add with carry 
+000003B6  ROL R26		Rotate Left Through Carry 
+000003B7  MUL R22,R20		Multiply unsigned 
+000003B8  CLR R22		Clear Register 
+000003B9  ADD R27,R0		Add without carry 
+000003BA  ADC R26,R1		Add with carry 
+000003BB  ROL R22		Rotate Left Through Carry 
+000003BC  MUL R24,R18		Multiply unsigned 
+000003BD  CLR R18		Clear Register 
+000003BE  ADD R27,R0		Add without carry 
+000003BF  ADC R26,R1		Add with carry 
+000003C0  ADC R22,R18		Add with carry 
+000003C1  MUL R23,R19		Multiply unsigned 
+000003C2  ADD R27,R0		Add without carry 
+000003C3  ADC R26,R1		Add with carry 
+000003C4  ADC R22,R18		Add with carry 
+--- No source file -------------------------------------------------------------
+000003C5  MUL R24,R19		Multiply unsigned 
+000003C6  ADD R26,R0		Add without carry 
+000003C7  ADC R22,R1		Add with carry 
+000003C8  ROL R18		Rotate Left Through Carry 
+000003C9  MUL R23,R20		Multiply unsigned 
+000003CA  CLR R19		Clear Register 
+000003CB  ADD R26,R0		Add without carry 
+000003CC  ADC R22,R1		Add with carry 
+000003CD  ADC R18,R19		Add with carry 
+000003CE  MUL R24,R20		Multiply unsigned 
+000003CF  ADD R22,R0		Add without carry 
+000003D0  ADC R18,R1		Add with carry 
+000003D1  MOV R24,R18		Copy register 
+000003D2  MOV R23,R22		Copy register 
+000003D3  MOV R22,R26		Copy register 
+000003D4  CLR R1		Clear Register 
+000003D5  SUBI R25,0x7F		Subtract immediate 
+000003D6  SBCI R21,0x00		Subtract immediate with carry 
+000003D7  BRMI PC+0x14		Branch if minus 
+000003D8  BREQ PC+0x1F		Branch if equal 
+000003D9  TST R24		Test for Zero or Minus 
+000003DA  BRMI PC+0x0A		Branch if minus 
+000003DB  LSL R30		Logical Shift Left 
+000003DC  ROL R31		Rotate Left Through Carry 
+000003DD  ROL R27		Rotate Left Through Carry 
+000003DE  ROL R22		Rotate Left Through Carry 
+000003DF  ROL R23		Rotate Left Through Carry 
+000003E0  ROL R24		Rotate Left Through Carry 
+000003E1  SUBI R25,0x01		Subtract immediate 
+000003E2  SBCI R21,0x00		Subtract immediate with carry 
+000003E3  BRNE PC-0x0A		Branch if not equal 
+000003E4  CPI R25,0xFE		Compare with immediate 
+000003E5  CPC R21,R1		Compare with carry 
+000003E6  BRCS PC+0x11		Branch if carry set 
+000003E7  JMP 0x000003FE		Jump 
+000003E9  JMP 0x0000038B		Jump 
+000003EB  CPI R21,0xFF		Compare with immediate 
+000003EC  BRLT PC-0x03		Branch if less than, signed 
+000003ED  CPI R25,0xE8		Compare with immediate 
+000003EE  BRLT PC-0x05		Branch if less than, signed 
+000003EF  LSR R24		Logical shift right 
+000003F0  ROR R23		Rotate right through carry 
+000003F1  ROR R22		Rotate right through carry 
+--- No source file -------------------------------------------------------------
+000003F2  ROR R27		Rotate right through carry 
+000003F3  ROR R31		Rotate right through carry 
+000003F4  ROR R30		Rotate right through carry 
+000003F5  SUBI R25,0xFF		Subtract immediate 
+000003F6  BRNE PC-0x07		Branch if not equal 
+000003F7  OR R31,R30		Logical OR 
+000003F8  LSL R24		Logical Shift Left 
+000003F9  ADC R25,R1		Add with carry 
+000003FA  LSR R25		Logical shift right 
+000003FB  ROR R24		Rotate right through carry 
+000003FC  BLD R25,7		Bit load from T to register 
+000003FD  RET 		Subroutine return 
+000003FE  BLD R25,7		Bit load from T to register 
+000003FF  ORI R25,0x7F		Logical OR with immediate 
+00000400  LDI R24,0x80		Load immediate 
+00000401  LDI R23,0x00		Load immediate 
+00000402  LDI R22,0x00		Load immediate 
+00000403  RET 		Subroutine return 
+00000404  SER R25		Set Register 
+00000405  LDI R24,0xC0		Load immediate 
+00000406  RET 		Subroutine return 
+00000407  CLR R0		Clear Register 
+00000408  DEC R0		Decrement 
+00000409  CP R1,R22		Compare 
+0000040A  CPC R1,R23		Compare with carry 
+0000040B  CPC R1,R24		Compare with carry 
+0000040C  CPC R0,R25		Compare with carry 
+0000040D  RET 		Subroutine return 
+0000040E  CLR R0		Clear Register 
+0000040F  DEC R0		Decrement 
+00000410  CP R1,R18		Compare 
+00000411  CPC R1,R19		Compare with carry 
+00000412  CPC R1,R20		Compare with carry 
+00000413  CPC R0,R21		Compare with carry 
+00000414  RET 		Subroutine return 
+00000415  MOV R0,R25		Copy register 
+00000416  INC R0		Increment 
+00000417  LSL R0		Logical Shift Left 
+00000418  BRNE PC+0x03		Branch if not equal 
+00000419  TST R24		Test for Zero or Minus 
+0000041A  BRMI PC+0x0B		Branch if minus 
+0000041B  LSL R27		Logical Shift Left 
+0000041C  BRCC PC+0x09		Branch if carry cleared 
+--- No source file -------------------------------------------------------------
+0000041D  OR R27,R31		Logical OR 
+0000041E  BRNE PC+0x03		Branch if not equal 
+0000041F  SBRS R22,0		Skip if bit in register set 
+00000420  RJMP PC+0x0005		Relative jump 
+00000421  SUBI R22,0xFF		Subtract immediate 
+00000422  SBCI R23,0xFF		Subtract immediate with carry 
+00000423  SBCI R24,0xFF		Subtract immediate with carry 
+00000424  SBCI R25,0xFF		Subtract immediate with carry 
+00000425  RET 		Subroutine return 
+00000426  LDI R26,0x21		Load immediate 
+00000427  MOV R1,R26		Copy register 
+00000428  SUB R26,R26		Subtract without carry 
+00000429  SUB R27,R27		Subtract without carry 
+0000042A  MOVW R30,R26		Copy register pair 
+0000042B  RJMP PC+0x000E		Relative jump 
+0000042C  ROL R26		Rotate Left Through Carry 
+0000042D  ROL R27		Rotate Left Through Carry 
+0000042E  ROL R30		Rotate Left Through Carry 
+0000042F  ROL R31		Rotate Left Through Carry 
+00000430  CP R26,R18		Compare 
+00000431  CPC R27,R19		Compare with carry 
+00000432  CPC R30,R20		Compare with carry 
+00000433  CPC R31,R21		Compare with carry 
+00000434  BRCS PC+0x05		Branch if carry set 
+00000435  SUB R26,R18		Subtract without carry 
+00000436  SBC R27,R19		Subtract with carry 
+00000437  SBC R30,R20		Subtract with carry 
+00000438  SBC R31,R21		Subtract with carry 
+00000439  ROL R22		Rotate Left Through Carry 
+0000043A  ROL R23		Rotate Left Through Carry 
+0000043B  ROL R24		Rotate Left Through Carry 
+0000043C  ROL R25		Rotate Left Through Carry 
+0000043D  DEC R1		Decrement 
+0000043E  BRNE PC-0x12		Branch if not equal 
+0000043F  COM R22		One's complement 
+00000440  COM R23		One's complement 
+00000441  COM R24		One's complement 
+00000442  COM R25		One's complement 
+00000443  MOVW R18,R22		Copy register pair 
+00000444  MOVW R20,R24		Copy register pair 
+00000445  MOVW R22,R26		Copy register pair 
+00000446  MOVW R24,R30		Copy register pair 
+00000447  RET 		Subroutine return 
+--- No source file -------------------------------------------------------------
+00000448  MOV R0,R21		Copy register 
+00000449  BST R25,7		Bit store from register to T 
+0000044A  BRTC PC+0x04		Branch if T flag cleared 
+0000044B  COM R0		One's complement 
+0000044C  CALL 0x0000045F		Call subroutine 
+0000044E  SBRC R21,7		Skip if bit in register cleared 
+0000044F  RCALL PC+0x0008		Relative call subroutine 
+00000450  CALL 0x00000426		Call subroutine 
+00000452  SBRC R0,7		Skip if bit in register cleared 
+00000453  RCALL PC+0x0004		Relative call subroutine 
+00000454  BRTC PC+0x0A		Branch if T flag cleared 
+00000455  JMP 0x0000045F		Jump 
+00000457  COM R21		One's complement 
+00000458  COM R20		One's complement 
+00000459  COM R19		One's complement 
+0000045A  NEG R18		Two's complement 
+0000045B  SBCI R19,0xFF		Subtract immediate with carry 
+0000045C  SBCI R20,0xFF		Subtract immediate with carry 
+0000045D  SBCI R21,0xFF		Subtract immediate with carry 
+0000045E  RET 		Subroutine return 
+0000045F  COM R25		One's complement 
+00000460  COM R24		One's complement 
+00000461  COM R23		One's complement 
+00000462  NEG R22		Two's complement 
+00000463  SBCI R23,0xFF		Subtract immediate with carry 
+00000464  SBCI R24,0xFF		Subtract immediate with carry 
+00000465  SBCI R25,0xFF		Subtract immediate with carry 
+00000466  RET 		Subroutine return 
+00000467  MUL R26,R18		Multiply unsigned 
+00000468  MOVW R22,R0		Copy register pair 
+00000469  MUL R27,R19		Multiply unsigned 
+0000046A  MOVW R24,R0		Copy register pair 
+0000046B  MUL R26,R19		Multiply unsigned 
+0000046C  ADD R23,R0		Add without carry 
+0000046D  ADC R24,R1		Add with carry 
+0000046E  CLR R1		Clear Register 
+0000046F  ADC R25,R1		Add with carry 
+00000470  MUL R27,R18		Multiply unsigned 
+00000471  ADD R23,R0		Add without carry 
+00000472  ADC R24,R1		Add with carry 
+00000473  CLR R1		Clear Register 
+00000474  ADC R25,R1		Add with carry 
+00000475  RET 		Subroutine return 
+--- No source file -------------------------------------------------------------
+00000476  CLI 		Global Interrupt Disable 
+00000477  RJMP PC-0x0000		Relative jump 
