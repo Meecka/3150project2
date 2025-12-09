@@ -22,11 +22,10 @@ void HHigh();
 void LLow();
 
 static volatile int compare_count = 0;
-volatile int CountingVar = 0x10;
+volatile int CountingVar = 0x00;
 volatile int CountingMax = 25;
 volatile int CountingChange = 1;
 volatile int CountersEqual = 1;
-volatile int t = 0;
 
 int main(void)
 {
