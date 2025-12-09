@@ -43,20 +43,20 @@ int main(void)
 	while (1)
 	{
 		CountersEqual = 0;
-		if (~PINA & (1 << 5))
-		{ // sw5
+		if (~PINA & (1 << 5)) // SW7
+		{
 			CountingVar++;
 		}
-		if (~PINA & (1 << 7))
-		{ // sw8
+		if (~PINA & (1 << 7)) // SW9
+		{
 			CountingVar--;
 		}
-		if (~PINA & (1 << 0))
-		{ // sw1
+		if (~PINA & (1 << 0)) // SW1
+		{
 			CountingMax++;
 		}
-		if (~PINA & (1 << 2))
-		{ // sw3
+		if (~PINA & (1 << 2)) // SW 3
+		{
 			CountingMax -= CountingChange;
 		}
 		PORTD = flip(CountingVar);
