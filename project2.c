@@ -16,14 +16,13 @@ void timer2_stop();
 void timer2_reset();
 ISR(TIMER2_COMPA_vect);
 void delay(int ms);
-void delay_us_variable(uint16_t us);
 void play_tone(uint16_t frequency, uint16_t duration_ms);
 int flip(int x);
 void CheckHighLow();
 void HHigh();
 void LLow();
-void Buzz_one_point_five();
-void Buzz_one();
+void downCountLoop();
+void initializationLoop();
 
 static volatile int compare_count = 0;
 volatile int CountingVar = 0x10;
@@ -38,13 +37,20 @@ int main(void)
 	PORTA = 0xFF;
 	DDRD = 0xFF;
 	DDRE = 0x10; // make all PE output
-	// PORTD = CountingVar;
-	// CountingVar = 0xFF;
 	PORTD = 0b01111000;
 	sei();
 	timer0_init_ctc();
-	// timer2_init_ctc();
 
+	while (1)
+	{
+		initializationLoop();
+		downCountLoop();
+	}
+	return 0;
+}
+
+void initializationLoop()
+{
 	while (1)
 	{
 		CountersEqual = 0;
@@ -76,25 +82,29 @@ int main(void)
 		delay(296);
 		CheckHighLow();
 	}
-	return 0;
+	return;
 }
 
-int currentCount = CountingVar;
-
-while (1)
+void downCountLoop()
 {
-	if (~PINA & (1 << 4)) // SW6
+	int currentCount = CountingVar;
+
+	while (1)
 	{
-		while (~PINA & (1 << 4))
+		if (~PINA & (1 << 4)) // SW6
 		{
-		} // wait for button release
-		while (currentCount != 0)
-		{
-			delay(500);
-			currentCount--;
-			PORTD = flip(currentCount);
+			while (~PINA & (1 << 4))
+			{
+			} // wait for button release
+			while (currentCount != 0)
+			{
+				delay(500);
+				currentCount--;
+				PORTD = flip(currentCount);
+			}
 		}
 	}
+	return;
 }
 
 void timer0_init_ctc()
@@ -141,15 +151,34 @@ void timer2_init_ctc(int compare_value)
 	TCCR2A |= (1 << WGM21);
 	TCCR2B = 0x00; // CTC mode
 	TCNT2 = 0;
-	OCR2A = compare_value; // 1ms with prescalar 64
+	OCR2A = compare_value;
 }
 
-void timer2_start()
+void timer2_start(int prescale)
 {
 	TIFR2 &= ~(1 << OCF2A);
 	TCNT2 = 0;
-	TCCR2B |= ((1 << CS21) | (1 << CS20)); // prescalar 64
-	TIMSK2 |= (1 << OCIE2A);			   // enable interrupt
+	if (prescale == 1)
+	{
+		TCCR2B |= (1 << CS20); // prescalar 1
+	}
+	else if (prescale == 8)
+	{
+		TCCR2B |= (1 << CS21); // prescalar 8
+	}
+	else if (prescale == 64)
+	{
+		TCCR2B |= ((1 << CS21) | (1 << CS20)); // prescalar 64
+	}
+	else if (prescale == 256)
+	{
+		TCCR2B |= (1 << CS22); // prescalar 256
+	}
+	else if (prescale == 1024)
+	{
+		TCCR2B |= ((1 << CS22) | (1 << CS20)); // prescalar 1024
+	}
+	TIMSK2 |= (1 << OCIE2A); // enable interrupt
 }
 
 uint8_t timer2_expired()
@@ -167,6 +196,7 @@ void timer2_reset()
 {
 	TCNT2 = 0;
 	TIFR2 |= (1 << OCF2A);
+	TCCR2B &= ~((1 << CS22) | (1 << CS21) | (1 << CS20)); // clear prescale bits
 	compare_count = 0;
 }
 
@@ -191,33 +221,56 @@ void play_tone(uint16_t frequency, uint16_t duration_ms)
 { // play a given frequency for a given amount of time
 	if (frequency == 0 || duration_ms == 0)
 		return;
-	if (frequency == 1500)
-	{
-		timer2_stop();
-		timer2_reset();
-		timer2_stop();
-		timer2_init_ctc(-83);
-	}
-	else if (frequency == 1000)
-	{
-		timer2_stop();
-		timer2_reset();
-		timer2_stop();
-		timer2_init_ctc(-125);
-	}
 	uint32_t duration_us = (uint32_t)duration_ms * 1000;
 	uint16_t half_period_us = 500000 / frequency;
+	int machineCycles = half_period_us / .0625;
+	int prescale = 0;
+	int timer_preload_val = 0;
+	if (machineCycles <= 255)
+	{
+		prescale = 1; // no prescaling
+		timer_preload_val = 0 - machineCycles;
+	}
+	else if (machineCycles / 8 <= 255)
+	{
+		prescale = 8;
+		timer_preload_val = 0 - (machineCycles / 8);
+	}
+	else if (machineCycles / 64 <= 255)
+	{
+		prescale = 64;
+		timer_preload_val = 0 - (machineCycles / 64);
+	}
+	else if (machineCycles / 256 <= 255)
+	{
+		prescale = 256;
+		timer_preload_val = 0 - (machineCycles / 256);
+	}
+	else if (machineCycles / 1024 <= 255)
+	{
+		prescale = 1024;
+		timer_preload_val = 0 - (machineCycles / 1024);
+	}
+	else
+	{
+		return; // no valid prescale for Timer0
+	}
+
+	timer2_stop();
+	timer2_reset();
+	timer2_init_ctc(timer_preload_val);
+
 	uint32_t total_toggles = duration_us / (2 * half_period_us); // each cycle = 2 toggles
 
 	for (uint32_t i = 0; i < total_toggles; i++)
 	{
 		PORTE |= (1 << 4);
-		timer2_start();
+		timer2_start(prescale);
 		while (!timer2_expired())
 			;
 		timer2_reset();
 		PORTE &= ~(1 << 4);
-		timer2_start();
+		timer2_start(prescale);
 		while (!timer2_expired())
 			;
 		timer2_reset();
