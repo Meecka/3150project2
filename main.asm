@@ -3,15 +3,15 @@
 ;
 
     
-	LDI R16, 0xFF
-	LDI R17, 0x00
+	LDI R16, 0xFF; loads maximum value into Register 16
+	LDI R17, 0x00; loads 0 into Register 16
 	OUT DDRA, R17 ; make all PA as input
 	OUT PORTA, R17 ; Enable pull-up on PA
 	OUT DDRD, R16 ; make all PD output
-	LDI R16, 0x10
+	LDI R16, 0x10; loads 0b00010000 into Regester 16
 	OUT DDRE, R16 ; make all PE output
-	OUT PORTD, R16
-	LDI R16, 0xFF
+	OUT PORTD, R16 ; starts PORTD at 0b00010000
+	LDI R16, 0xFF; loads maximum value into Register 16
 	
 	LDI R22, 1; subtract
 	LDI R21, 25 ;max value
